@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import logo from '@/assets/logo.png';
 import { ref } from 'vue';
 const drawer = ref(true);
 
@@ -11,6 +10,14 @@ const handleLogout = async () => {
   await logout();
   navigateTo('/login');
 };
+
+// Snackbar reference for global use
+const snackbar = ref(null);
+
+// Make the `show` method globally accessible using Nuxt's global state
+useNuxtApp().$showSnackbar = (msg, color = 'success', timeout = 3000) => {
+  snackbar.value?.show(msg, color, timeout);
+};
 </script>
 
 <template>
@@ -18,13 +25,42 @@ const handleLogout = async () => {
     <v-navigation-drawer v-model="drawer" permanent>
       <v-list-item nav class="w-full text-center mt-5">
         <h3 class="font-title-3 text-center">WS</h3>
-        <p class="font-body relative">Dashboard</p>
+        <p class="font-body relative">Admin Dashboard</p>
       </v-list-item>
 
       <v-list density="compact" nav :disabled="loading" class="pa-4">
         <v-list-item to="/" prepend-icon="mdi-home" title="Home" value="home"></v-list-item>
-        <!-- <v-list-item to="/users" prepend-icon="mdi-account" title="Users" value="users"></v-list-item> -->
-        <v-list-item to="/customers" prepend-icon="mdi-menu" title="Customers" value="customers"></v-list-item>
+
+        <v-list-group value="customers" class="customers-list">
+          <template v-slot:activator="{ props }">
+            <v-list-item to="#" v-bind="props" prepend-icon="mdi-menu" title="Customers"></v-list-item>
+          </template>
+
+          <!-- <v-list-item
+            title="Version Control"
+            prepend-icon="mdi-version"
+            value="version-control"
+            to="/version-control"
+          ></v-list-item> -->
+          <v-list-item title="List" value="customers-list" to="/customers" />
+          <v-list-item title="New Entry" value="customers-new-entry" to="/customers/new"></v-list-item>
+        </v-list-group>
+
+        <v-list-group value="users" class="users-list">
+          <template v-slot:activator="{ props }">
+            <v-list-item to="#" v-bind="props" prepend-icon="mdi-human-male-female" title="Users"></v-list-item>
+          </template>
+          <v-list-item title="List" value="users-list" to="/users" />
+          <v-list-item title="New Entry" value="users-new-entry" to="/users/new"></v-list-item>
+        </v-list-group>
+
+        <v-list-group value="sequences" class="sequences">
+          <template v-slot:activator="{ props }">
+            <v-list-item to="#" v-bind="props" prepend-icon="mdi-stairs" title="Sequences"></v-list-item>
+          </template>
+          <v-list-item title="List" value="sequence-list" to="/sequences" />
+          <v-list-item title="New Sequence" value="sequence-new-entry" to="/sequences/new"></v-list-item>
+        </v-list-group>
 
         <v-list-group value="settings" class="settings-list">
           <template v-slot:activator="{ props }">
@@ -54,6 +90,7 @@ const handleLogout = async () => {
       </v-list>
     </v-navigation-drawer>
     <v-main>
+      <GeneralNotification ref="snackbar" />
       <NuxtPage />
     </v-main>
   </v-layout>

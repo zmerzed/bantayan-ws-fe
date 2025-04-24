@@ -2,15 +2,15 @@
 import ApiError from '@/types/ApiError';
 import dayjs from 'dayjs';
 import { ref } from 'vue';
-const adminList = useAdmins();
-const paginationOptions = computed(() => adminList.paginationOptions.value)
+const sequenceList = useSequences();
+const paginationOptions = computed(() => sequenceList.paginationOptions.value)
 const meta = computed(() => paginationOptions.value.listMeta)
 const list = computed(() => paginationOptions.value.list)
 
 const listOptions = reactive({
   page: 1,
   sort: '-created_at',
-  per_page: 5
+  per_page: 15
 })
 definePageMeta({
   middleware: ['auth'],
@@ -28,7 +28,7 @@ const filters = reactive({
 })
 
 async function loadList() {
-  await adminList.getList(listOptions, filters)
+  await sequenceList.getList(listOptions, filters)
 }
 
 onMounted(async () => {
@@ -51,10 +51,9 @@ watch([page, search, sortedBy], () => {
 
 const fields = [
   { key: 'id', label: 'ID', sortable: true },
-  { key: 'full_name', label: 'Name', sortable: false },
-  { key: 'email', label: 'Email', sortable: false },
-  { key: 'role', label: 'Role', sortable: true },
-  { key: 'created_at', label: 'Entry Date', sortable: false, format: (value) => dayjs(value).format('DD/MM/YYYY') },
+  { key: 'number', label: 'Sequence', sortable: false },
+  { key: 'barangay', label: 'Barangay', sortable: false },
+  { key: 'reader', label: 'Reader', sortable: false },
   { key: 'actions', label: '' },
 ];
 </script>
@@ -62,26 +61,34 @@ const fields = [
   <v-container fluid>
     <v-card class="pa-4">
       <v-card-title class="d-flex align-center">
-        <h2 class="mb-4">Users</h2>
+        <h2 class="mb-4">Sequence</h2>
       </v-card-title>
       <v-card-text>
         <SimpleTable
           :items="list"
           :fields="fields"
           :pagination="{ currentPage: meta?.current_page, totalPages: meta?.last_page }"
-          :loading="adminList.fetching.value"
+          :loading="sequenceList.fetching.value"
           @change-page="changePage($event)"
           @sort-page="
             sortedBy = $event;
             page = 1;
           "
         >
+          <template #cell(barangay)="{ item }">
+            {{ item.barangay?.name }}
+          </template>
+          <template #cell(reader)="{ item }">
+            <v-chip>
+                {{ item.reader.full_name }}
+            </v-chip>
+          </template>
           <template #cell(status)="{ item }">
             <UiStatus :status="item.status" />
           </template>
           <template #cell(actions)="{ item }">
             <div class="d-flex">
-              <v-btn class="ma-1" icon="mdi-eye" color="primary" rounded="xl" flat size="x-small" :to="`/users/${item.id}`" />
+              <v-btn class="ma-1" icon="mdi-eye" color="primary" rounded="xl" flat size="x-small" :to="`/sequences/${item.id}`" />
             </div>
           </template>
         </SimpleTable>

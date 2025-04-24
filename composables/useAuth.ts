@@ -19,7 +19,7 @@ export const useAuth = () => {
   }
 
   async function login(credentials: Credentials) {
-    const { data, error } = await useApi('/auth/login', {
+    const { data, error } = await useApi('/admin/auth/login', {
       method: 'POST',
       body: credentials,
     });
