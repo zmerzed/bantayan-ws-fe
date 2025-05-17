@@ -1,14 +1,14 @@
-import { Sequence } from "~/types/Sequence";
+import { Reading } from "~/types/Reading";
 import { ListMeta } from "~/types/DataTable";
 import ApiError from "~/types/ApiError";
 
-export const useBrgys = () => {
+export const useFetchReadings = () => {
 
     const isInfiniteScroll = ref(false)
     const fetching = ref(false)
 
     const paginationOptions = ref<{
-        list: Array<Sequence>,
+        list: Array<Reading>,
         listMeta: ListMeta
     }
     >({
@@ -23,8 +23,8 @@ export const useBrgys = () => {
         },
     })
 
-    function appendRows(rows: Array<Sequence>) {
-        useEach(rows, (row: Sequence) => {
+    function appendRows(rows: Array<Reading>) {
+        useEach(rows, (row: Reading) => {
             const exist = useFind(paginationOptions.value.list, {id: row.id});
             if (!exist) {
                 paginationOptions.value.list.push(row);
@@ -51,22 +51,23 @@ export const useBrgys = () => {
             }, {});
 
             fetching.value = true;
-            const {data, error} = await useApi('/barangays', {
+            const {data, error} = await useApi('/readings', {
                 method: 'GET',
                 params: {
-                    //...options,
+                    ...options,
                     ...computedFilters,
                     //include: 'customer.avatar,seller.avatar,seller.businessInformation,orderDetails.product.photos,orderDetails.options,orderDetailsCount',
                 },
             });
 
             if (isInfiniteScroll.value) {
-                appendRows(data.value?.data as Array<Sequence>)
+                appendRows(data.value?.data as Array<Reading>)
             } else {
-                paginationOptions.value.list = data.value?.data as Array<Sequence>
+                paginationOptions.value.list = data.value?.data as Array<Reading>
             }
             paginationOptions.value.listMeta = data.value?.meta as ListMeta
 
+            console.log('mmm', fetching.value)
             if (error.value) {
                 throw new ApiError(error.value);
             }

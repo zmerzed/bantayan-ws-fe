@@ -7,7 +7,7 @@ const { $showSnackbar } = useNuxtApp();
 const { validations } = useValidation();
 const customerStore = CustomerStore();
 const { accountNumberGenerated, generateAccountNumber, getCustomer } = useFetchCustomer();
-const { brgys, getBarangays } = useFetchBrgys();
+const { brgys, getList: getBarangays } = useFetchBrgys();
 const props = withDefaults(
   defineProps<{
     open?: boolean;

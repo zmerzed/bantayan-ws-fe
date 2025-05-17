@@ -62,6 +62,13 @@ useNuxtApp().$showSnackbar = (msg, color = 'success', timeout = 3000) => {
           <v-list-item title="New Sequence" value="sequence-new-entry" to="/sequences/new"></v-list-item>
         </v-list-group>
 
+        <v-list-group value="readings" class="readings">
+          <template v-slot:activator="{ props }">
+            <v-list-item to="#" v-bind="props" prepend-icon="mdi-read" title="Readings"></v-list-item>
+          </template>
+          <v-list-item title="Generate" value="generate-readings" to="/readings" />
+        </v-list-group>
+
         <v-list-group value="settings" class="settings-list">
           <template v-slot:activator="{ props }">
             <v-list-item to="#" v-bind="props" prepend-icon="mdi-wrench" title="Settings"></v-list-item>
